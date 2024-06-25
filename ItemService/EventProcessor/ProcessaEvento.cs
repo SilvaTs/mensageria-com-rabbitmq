@@ -6,12 +6,12 @@ using System.Text.Json;
 
 namespace ItemService.EventProcessor;
 
-public class ProcessoEvento : IProcessoEvento
+public class ProcessaEvento : IProcessaEvento
 {
     private readonly IMapper _mapper;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public ProcessoEvento(IMapper mapper, IServiceScopeFactory serviceScopeFactory)
+    public ProcessaEvento(IMapper mapper, IServiceScopeFactory serviceScopeFactory)
     {
         _mapper = mapper;
         _serviceScopeFactory = serviceScopeFactory;

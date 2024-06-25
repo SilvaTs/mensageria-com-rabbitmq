@@ -1,6 +1,6 @@
 ﻿namespace ItemService.EventProcessor
 {
-    public interface IProcessoEvento
+    public interface IProcessaEvento
     {
         void Processo(string mensagem);
     }

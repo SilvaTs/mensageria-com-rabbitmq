@@ -11,20 +11,22 @@ namespace ItemService.RabbitMqClient
         private readonly string _nomeDaFila;
         private readonly IConnection _connection;
         private IModel _channel;
-        private IProcessoEvento _processoEvento;
+        private IProcessaEvento _processoEvento;
 
-        public RabbitMqSubscriber(IConfiguration configuration)
+        public RabbitMqSubscriber(IConfiguration configuration, IProcessaEvento processoEvento)
         {
             _configuration = configuration;
             _connection = new ConnectionFactory()
             {
-                HostName = "localhost",
-                Port = 8002
+                HostName = _configuration["RabbitMQHost"],
+                Port = Int32.Parse(_configuration["RabbitMQPort"])
             }.CreateConnection();
             _channel = _connection.CreateModel();
             _channel.ExchangeDeclare(exchange: "trigger", type: ExchangeType.Fanout);
             _nomeDaFila = _channel.QueueDeclare().QueueName;
             _channel.QueueBind(queue: _nomeDaFila, exchange: "trigger", routingKey: "");
+            _processoEvento = processoEvento;
+
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -33,7 +35,7 @@ namespace ItemService.RabbitMqClient
 
             consumidor.Received += (ModuleHandle, eventArgs) =>
             {
-                var body = eventArgs.Body;
+                ReadOnlyMemory<byte> body = eventArgs.Body;
                 var mensagem = Encoding.UTF8.GetString(body.ToArray());
                 _processoEvento.Processo(mensagem);
             };
